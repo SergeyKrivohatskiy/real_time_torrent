@@ -1,0 +1,8 @@
+
+    [deluge.plugin.core]
+    rt = rt:CorePlugin
+    [deluge.plugin.gtkui]
+    rt = rt:GtkUIPlugin
+    [deluge.plugin.web]
+    rt = rt:WebUIPlugin
+    
