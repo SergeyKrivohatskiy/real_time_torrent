@@ -3,6 +3,8 @@ rt/__init__.py
 rt/common.py
 rt/core.py
 rt/gtkui.py
+rt/torrents_storage.py
+rt/utils.py
 rt/webui.py
 rt.egg-info/PKG-INFO
 rt.egg-info/SOURCES.txt

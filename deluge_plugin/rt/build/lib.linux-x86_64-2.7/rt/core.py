@@ -42,6 +42,8 @@ from deluge.plugins.pluginbase import CorePluginBase
 import deluge.component as component
 import deluge.configmanager
 from deluge.core.rpcserver import export
+from twisted.internet.task import LoopingCall
+from torrents_storage import TorrentsStorage
 
 DEFAULT_PREFS = {
     "test":"NiNiNi"
@@ -49,11 +51,16 @@ DEFAULT_PREFS = {
 
 class Core(CorePluginBase):
     def enable(self):
-        log.error("azaza")
+        self.config = deluge.configmanager.ConfigManager("myplugin.conf", DEFAULT_PREFS)
+        
         core = component.get("Core")
-        tm = core.torrentmanager
-        log.error(tm)
+        self.torrents_storage = TorrentsStorage(core)
         self.config = deluge.configmanager.ConfigManager("rt.conf", DEFAULT_PREFS)
+        self.update_torrents_storage = LoopingCall(self.update_storage)
+        self.update_torrents_storage.start(2)
+
+    def update_storage(self):
+        self.torrents_storage.update_torrent_list()
 
     def disable(self):
         pass
