@@ -11,6 +11,8 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/time.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
 struct read_request
 {
@@ -29,7 +31,12 @@ static const int MAX_WAIT_TIME = 1; // seconds
 
 static char PATH_BUFFER[1024];
 static int TORRENTS_DIR_LEN;
+
+
 static long requests_count = 0;
+static int request_queue;
+static int responce_queue;
+
 
 static int on_read(const char *path)
 {
@@ -186,22 +193,39 @@ static struct fuse_operations callbacks_oper = {
 int main(int argc, char *argv[])
 {
 	int fuse_ret;
+   	key_t req_key;
+   	key_t res_key;
+   	char *torrents_dir;
+
 	if (argc < 2)
 	{
+		perror("argc < 2");
 		return -1;
 	}
-	char *torrents_dir = argv[1];
+	torrents_dir = argv[1];
 	TORRENTS_DIR_LEN = strlen(torrents_dir);
 	strcpy(PATH_BUFFER, torrents_dir);
 	argc -= 1;
 	argv[1] = argv[0];
 	argv += 1;
 
-	// TODO open request queue and result queue
+   	req_key = ftok(torrents_dir, 'q');
+	request_queue = msgget(req_key, IPC_CREAT | 0660);
+	if (request_queue == -1) {
+		perror("Creating request queue failed");
+		return -2;
+	}
+   	res_key = ftok(torrents_dir, 's');
+	responce_queue = msgget(res_key, IPC_CREAT | 0660);
+	if (responce_queue == -1) {
+		perror("Creating responce queue failed");
+		return -3;
+	}
 
 	fuse_ret = fuse_main(argc, argv, &callbacks_oper, NULL);
 
-	// TODO close request queue and result queue
+	msgctl(req_key, IPC_RMID, 0);
+	msgctl(res_key, IPC_RMID, 0);
 
 	return fuse_ret;
 }
