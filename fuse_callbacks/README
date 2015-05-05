@@ -1,0 +1,7 @@
+#Building and running callbacks VFS
+* Download fuse(tested with fuse 2.9.3) from http://fuse.sourceforge.net/
+* Go to fuse directory
+* Run `./configure && make && make install` to make and install fuse
+* Go to fuse_callbacks directory
+* Run `make` to make callbacks VFS
+* Run `./callbacks $DIRECTORY_TO_CLONE$ $MOUNT_POINT$ [$FUSE_ARGS$]` to mount callbacks VFS to `$MOUNT_POINT$` directory. Tip: use `-d` fuse flag for debugging
