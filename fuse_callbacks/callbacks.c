@@ -14,22 +14,11 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-struct read_request
-{
-	long request_id;
-	off_t offset;
-	char *path;
-};
 
-struct read_responce
-{
-	long request_id;
-	size_t available_bytes;
-};
-
+#define MAX_PATH_LEN 1024
 static const int MAX_WAIT_TIME = 1; // seconds
 
-static char PATH_BUFFER[1024];
+static char PATH_BUFFER[MAX_PATH_LEN];
 static int TORRENTS_DIR_LEN;
 
 
@@ -37,16 +26,48 @@ static long requests_count = 0;
 static int request_queue;
 static int responce_queue;
 
-
-static int on_read(const char *path)
+struct read_request
 {
-	requests_count += 1;
-	// TODO 
-	// send read_request
-	// wait for read responce no more than X seconds
+	long request_id;
+	char request_str[MAX_PATH_LEN + 20]; // for path + offset string. Format: $offset$ $full path$ 
+};
 
-	sleep(MAX_WAIT_TIME);
-	return 0;
+struct read_responce
+{
+	long request_id;
+	char responce_str[20]; // For integer value(available bytes)
+};
+
+static int on_read(const char *path, off_t offset)
+{
+	int res;
+	int req_len;
+	int bytes_allowed;
+	struct read_request req;
+	struct read_responce resp;
+	requests_count += 1;
+
+	req.request_id = requests_count;
+	req_len = sprintf(req.request_str, "%zd %s", offset, path);
+
+	res = msgsnd(request_queue, &req, req_len, 0);
+	if (res == -1)
+	{
+		return -EIO; // Can't find better error code
+	}
+	res = msgrcv(responce_queue, &resp, sizeof(struct read_responce) - sizeof(long), req.request_id, 0);
+	if (res == -1)
+	{
+		return -EIO;
+	}
+
+	res = sscanf(resp.responce_str, "%d", &bytes_allowed);
+	if (res == -1)
+	{
+		return -EIO;
+	}
+
+	return bytes_allowed;
 }
 
 static char* to_real_path(const char *path)
@@ -136,14 +157,15 @@ static int callbacks_read(const char *path, char *buf, size_t size, off_t offset
 
 	(void) fi;
 
-	res = on_read(path);
+	path = to_real_path(path);
+	res = on_read(path, offset);
 	if (res < 0)
 		return res;
-	fd = open(to_real_path(path), O_RDONLY);
+	fd = open(path, O_RDONLY);
 	if (fd == -1)
 		return -errno;
 
-	res = pread(fd, buf, size, offset);
+	res = pread(fd, buf, res < size ? res : size, offset);
 	if (res == -1)
 		res = -errno;
 
@@ -209,18 +231,19 @@ int main(int argc, char *argv[])
 	argv[1] = argv[0];
 	argv += 1;
 
-   	req_key = ftok(torrents_dir, 'q');
+   	req_key = 87532;//ftok(torrents_dir, 'q');
 	request_queue = msgget(req_key, IPC_CREAT | 0660);
 	if (request_queue == -1) {
 		perror("Creating request queue failed");
 		return -2;
 	}
-   	res_key = ftok(torrents_dir, 's');
+   	res_key = 98531;//ftok(torrents_dir, 's');
 	responce_queue = msgget(res_key, IPC_CREAT | 0660);
 	if (responce_queue == -1) {
 		perror("Creating responce queue failed");
 		return -3;
 	}
+	// TODO set message queues max msg size
 
 	fuse_ret = fuse_main(argc, argv, &callbacks_oper, NULL);
 
