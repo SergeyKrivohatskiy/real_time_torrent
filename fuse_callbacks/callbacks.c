@@ -12,13 +12,33 @@
 #include <errno.h>
 #include <sys/time.h>
 
+struct read_request
+{
+	long request_id;
+	off_t offset;
+	char *path;
+};
+
+struct read_responce
+{
+	long request_id;
+	size_t available_bytes;
+};
+
+static const int MAX_WAIT_TIME = 1; // seconds
+
 static char PATH_BUFFER[1024];
 static int TORRENTS_DIR_LEN;
+static long requests_count = 0;
 
 static int on_read(const char *path)
 {
-	// TODO
-	sleep(1);
+	requests_count += 1;
+	// TODO 
+	// send read_request
+	// wait for read responce no more than X seconds
+
+	sleep(MAX_WAIT_TIME);
 	return 0;
 }
 
@@ -109,8 +129,9 @@ static int callbacks_read(const char *path, char *buf, size_t size, off_t offset
 
 	(void) fi;
 
-	if (on_read(path) == -1)
-		return -errno;
+	res = on_read(path);
+	if (res < 0)
+		return res;
 	fd = open(to_real_path(path), O_RDONLY);
 	if (fd == -1)
 		return -errno;
@@ -164,6 +185,7 @@ static struct fuse_operations callbacks_oper = {
 
 int main(int argc, char *argv[])
 {
+	int fuse_ret;
 	if (argc < 2)
 	{
 		return -1;
@@ -171,7 +193,15 @@ int main(int argc, char *argv[])
 	char *torrents_dir = argv[1];
 	TORRENTS_DIR_LEN = strlen(torrents_dir);
 	strcpy(PATH_BUFFER, torrents_dir);
-
+	argc -= 1;
 	argv[1] = argv[0];
-	return fuse_main(argc - 1, argv + 1, &callbacks_oper, NULL);
+	argv += 1;
+
+	// TODO open request queue and result queue
+
+	fuse_ret = fuse_main(argc, argv, &callbacks_oper, NULL);
+
+	// TODO close request queue and result queue
+
+	return fuse_ret;
 }
