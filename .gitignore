@@ -27,5 +27,5 @@
 *.out
 *.app
 
-libtorrent-rasterbar-1.0.4/*.deb
-
+*.deb
+*.so.*
