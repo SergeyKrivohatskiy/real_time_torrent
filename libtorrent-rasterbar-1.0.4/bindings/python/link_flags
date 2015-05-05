@@ -1,0 +1,1 @@
+-L../../src/.libs -L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu  -fvisibility=hidden -fvisibility-inlines-hidden
