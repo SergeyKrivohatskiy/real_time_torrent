@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-
 class TorrentsStorage():
 
 	stored_torrents = []
@@ -45,15 +44,35 @@ class TorrentsStorage():
 	def get_torrent_piece_idx(self, path, file_offset):
 		torrent_offset = self.get_torrent_offset(self, path, file_offset)
 		if torrent_offset == -1:
-			return -1
+			return -1, -1
 		torrent_id = self.stored_files[path]["torrent_id"]
 		torrent = self.core.torrentmanager[torrent_id]
-		return torrent_offset / torrent.get_status(["piece_length"])["piece_length"]
+		piece_len = torrent.get_status(["piece_length"])["piece_length"]
+		piece_idx = torrent_offset / piece_len
+		len_to_end = piece_idx * piece_length - torrent_offset
+		return piece_idx, len_to_end
+
 
 	def prioritize_piece(self, torrent_id, piece_idx):
-		torrent_handle = self.core.torrentmanager[torrent_id].handle
-		handle.set_piece_deadline(piece_idx, 0)
+		prioritize_piece_count = 5
+		handle = self.core.torrentmanager[torrent_id].handle
+		handle.set_piece_priority(piece_idx, 3)
+		for i in range(piece_idx + 1, piece_idx + prioritize_piece_count + 1):
+			if handle.get_piece_priority(piece_idx) == 3:
+				continue
+			handle.set_piece_priority(piece_idx, 2)
 
-	def response_to_all_ready(self):
-		session = self.core.session()
-		
+	def is_loaded(self, torrent_id, piece_idx):
+		handle = self.core.torrentmanager[piece_id.torrent_id].handle
+		if !handle.have_piece(piece_id.piece_idx):
+			return False
+		session = self.core.session
+		hsh = bytes(handle.info_hash().to_string())
+		cached = session.get_cache_info(hsh)
+		for item in cached:
+			if item.piece == piece_id.piece_idx && item.kind == 1:
+				handle.flush_cache()
+				return False
+		return True
+
+	def on_request(self, offset, path, timeout, req_id, on_response):
