@@ -56,4 +56,7 @@ class TorrentsStorage():
 
 	def response_to_all_ready(self):
 		session = self.core.session()
+
+	def on_request(self, offset, path, timeout, req_id, callback):
+		pass
 		

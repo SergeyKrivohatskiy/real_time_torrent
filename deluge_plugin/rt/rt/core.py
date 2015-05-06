@@ -44,6 +44,7 @@ import deluge.configmanager
 from deluge.core.rpcserver import export
 from twisted.internet.task import LoopingCall
 from torrents_storage import TorrentsStorage
+from sysv_ipc import MessageQueue
 
 DEFAULT_PREFS = {
     "test":"NiNiNi"
@@ -54,13 +55,28 @@ class Core(CorePluginBase):
         self.config = deluge.configmanager.ConfigManager("myplugin.conf", DEFAULT_PREFS)
         
         core = component.get("Core")
+        self.requests_queue = MessageQueue(87532)
+        self.responces_queue = MessageQueue(98531)
         self.torrents_storage = TorrentsStorage(core)
         self.config = deluge.configmanager.ConfigManager("rt.conf", DEFAULT_PREFS)
-        self.update_torrents_storage = LoopingCall(self.update_storage)
-        self.update_torrents_storage.start(2)
+        self.update_torrents_storage = LoopingCall(self.process_vfs_request)
+        self.update_torrents_storage.start(0)
 
-    def update_storage(self):
-        self.torrents_storage.update_torrent_list()
+    def parse_request_str(request_str):
+        space_idx = request_str.find(' ')
+        return int(request_str[:space_idx]), request_str[space_idx + 1:]
+
+    def process_vfs_request(self):
+        request_str, request_id = self.requests_queue.receive()
+        offset, path = self.parse_request_str(request_str)
+
+        self.torrents_storage.on_request(offset, path, 10, request_id, self.request_callback):
+
+    def to_resp_str(allowed):
+        return str(allowed) + '\0'
+
+    def request_callback(self, request_id, result):
+        self.responces_queue.send(to_resp_str(result), type=request_id)
 
     def disable(self):
         pass
