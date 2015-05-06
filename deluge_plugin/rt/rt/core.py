@@ -59,8 +59,8 @@ class Core(CorePluginBase):
         self.responces_queue = MessageQueue(98531)
         self.torrents_storage = TorrentsStorage(core)
         self.config = deluge.configmanager.ConfigManager("rt.conf", DEFAULT_PREFS)
-        self.update_torrents_storage = LoopingCall(self.process_vfs_request)
-        self.update_torrents_storage.start(0)
+        self.request_processing_loop = LoopingCall(self.process_vfs_request)
+        self.request_processing_loop.start(0)
 
     def parse_request_str(request_str):
         space_idx = request_str.find(' ')
@@ -79,7 +79,7 @@ class Core(CorePluginBase):
         self.responces_queue.send(to_resp_str(result), type=request_id)
 
     def disable(self):
-        pass
+        self.request_processing_loop.stop()
 
     def update(self):
         pass
