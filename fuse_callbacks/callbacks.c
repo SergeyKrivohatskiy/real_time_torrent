@@ -1,5 +1,15 @@
+/*
+	Callbacks VFS
+
+	Copyright (c) 2015 Sergey Krivohatskiy(s.krivohatskiy@gmail.com)
+	see license file
+
+	written using fuse example fusexmp written by
+	  Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
+	  Copyright (C) 2011       Sebastian Pipping <sebastian@pipping.org>
+*/
+
 #define FUSE_USE_VERSION 26
-#define DEBUG
 
 #include <fuse.h>
 #include <stdio.h>
@@ -16,13 +26,16 @@
 
 
 #define MAX_PATH_LEN 1024
-static const int MAX_WAIT_TIME = 1; // seconds
 
 static char PATH_BUFFER[MAX_PATH_LEN];
 static int TORRENTS_DIR_LEN;
 
 
 static long requests_count = 0;
+
+// It's believed that const random numbers might be better than calling ftok
+static const key_t requests_queue_key = 87532;
+static const key_t responce_queue_key = 98531;
 static int request_queue;
 static int responce_queue;
 
@@ -215,8 +228,6 @@ static struct fuse_operations callbacks_oper = {
 int main(int argc, char *argv[])
 {
 	int fuse_ret;
-   	key_t req_key;
-   	key_t res_key;
    	char *torrents_dir;
 
 	if (argc < 2)
@@ -231,24 +242,21 @@ int main(int argc, char *argv[])
 	argv[1] = argv[0];
 	argv += 1;
 
-   	req_key = 87532;//ftok(torrents_dir, 'q');
-	request_queue = msgget(req_key, IPC_CREAT | 0660);
+	request_queue = msgget(requests_queue_key, IPC_CREAT | 0660);
 	if (request_queue == -1) {
 		perror("Creating request queue failed");
 		return -2;
 	}
-   	res_key = 98531;//ftok(torrents_dir, 's');
-	responce_queue = msgget(res_key, IPC_CREAT | 0660);
+	responce_queue = msgget(responce_queue_key, IPC_CREAT | 0660);
 	if (responce_queue == -1) {
 		perror("Creating responce queue failed");
 		return -3;
 	}
-	// TODO set message queues max msg size
 
 	fuse_ret = fuse_main(argc, argv, &callbacks_oper, NULL);
 
-	msgctl(req_key, IPC_RMID, 0);
-	msgctl(res_key, IPC_RMID, 0);
+	msgctl(requests_queue_key, IPC_RMID, 0);
+	msgctl(responce_queue_key, IPC_RMID, 0);
 
 	return fuse_ret;
 }
