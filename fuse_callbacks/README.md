@@ -5,15 +5,18 @@
 
 ##Usage
 To use **Callbacks VFS** you should write your callback handler.
-Callback handler may be written is any programming language.
+Callback handler may be written in any programming language.
 Callback handler should read requests from requests queue(key=87532) and write responces to responce queue(key=98531).
 Request contains request id(==message type) and string containing offset and file absolute path in format `$offset$ $path$`.
 Responce contains responce id(==request id) and string containing available bytes for reading(>0) or error code(<0, see error codes section).
 
 **Callbacks VFS** won't allow any to read its files until it recives the responce from callback handler
 
+**Callbacks VFS** will read data from the real file. So data(from offset to available bytes) should be written by the moment of reciving the responce from the callback handler
+
 ##Error codes
-TODO
+Same to read error codes. See `man read`
+
 
 ##Building and running **Callbacks VFS**
 * Download fuse(tested with fuse 2.9.3) from http://fuse.sourceforge.net/
