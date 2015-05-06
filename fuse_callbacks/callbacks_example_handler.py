@@ -9,7 +9,7 @@ def main():
         while True:
             request_str, request_id = requests_queue.receive()
             print("%d: %s" % (request_id, request_str))
-            bytes_allowed_to_read = 2 # 0 not alowed. < 0 - error(TODO)
+            bytes_allowed_to_read = 1024 # 0 not alowed. < 0 - error(TODO)
             responces_queue.send(str(bytes_allowed_to_read) + '\0', type=request_id)
 
 
