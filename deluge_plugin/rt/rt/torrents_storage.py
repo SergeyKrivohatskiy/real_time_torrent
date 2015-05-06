@@ -41,16 +41,16 @@ class TorrentsStorage():
 		else
 			return -1
 
-	def get_torrent_piece_idx(self, path, file_offset):
+	def get_torrent_piece_info(self, path, file_offset):
 		torrent_offset = self.get_torrent_offset(self, path, file_offset)
 		if torrent_offset == -1:
-			return -1, -1
+			return -1, -1, -1
 		torrent_id = self.stored_files[path]["torrent_id"]
 		torrent = self.core.torrentmanager[torrent_id]
 		piece_len = torrent.get_status(["piece_length"])["piece_length"]
 		piece_idx = torrent_offset / piece_len
 		len_to_end = piece_idx * piece_length - torrent_offset
-		return piece_idx, len_to_end
+		return torrent_id, piece_idx, len_to_end
 
 
 	def prioritize_piece(self, torrent_id, piece_idx):
@@ -76,3 +76,19 @@ class TorrentsStorage():
 		return True
 
 	def on_request(self, offset, path, timeout, req_id, on_response):
+		torrent_id, piece_idx, len_to_end = self.get_torrent_piece_info(path, offset)
+		if torrent_id == -1:
+			on_response(req_id, 12345678)
+			return
+		self.prioritize_piece(torrent_id, piece_idx)
+		if is_loaded(torrent_id, piece_idx):
+			on_response(req_id, len_to_end)
+			return
+		from time import sleep
+		while timeout > 0:
+			sleep(0.1)
+			timeout -= 0.1
+			if is_loaded(torrent_id, piece_idx):
+				on_response(req_id, len_to_end)
+				return
+		on_response(req_id, -1)
