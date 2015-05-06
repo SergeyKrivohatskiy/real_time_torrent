@@ -60,9 +60,9 @@ class Core(CorePluginBase):
         self.torrents_storage = TorrentsStorage(core)
         self.config = deluge.configmanager.ConfigManager("rt.conf", DEFAULT_PREFS)
         self.request_processing_loop = LoopingCall(self.process_vfs_request)
-        self.request_processing_loop.start(0)
+  #      self.request_processing_loop.start(0.1)
 
-    def parse_request_str(request_str):
+    def parse_request_str(self, request_str):
         space_idx = request_str.find(' ')
         return int(request_str[:space_idx]), request_str[space_idx + 1:]
 
@@ -70,13 +70,13 @@ class Core(CorePluginBase):
         request_str, request_id = self.requests_queue.receive()
         offset, path = self.parse_request_str(request_str)
 
-        self.torrents_storage.on_request(offset, path, 10, request_id, self.request_callback):
+        self.torrents_storage.on_request(offset, path, 10, request_id, self.request_callback)
 
-    def to_resp_str(allowed):
+    def to_resp_str(self, allowed):
         return str(allowed) + '\0'
 
     def request_callback(self, request_id, result):
-        self.responces_queue.send(to_resp_str(result), type=request_id)
+        self.responces_queue.send(self.to_resp_str(result), type=request_id)
 
     def disable(self):
         self.request_processing_loop.stop()

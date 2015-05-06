@@ -38,7 +38,7 @@ class TorrentsStorage():
 	def get_torrent_offset(self, path, file_offset):
 		if self.exists(path):
 			return self.stored_files[path]["offset"] + file_offset
-		else
+		else:
 			return -1
 
 	def get_torrent_piece_info(self, path, file_offset):
@@ -64,13 +64,13 @@ class TorrentsStorage():
 
 	def is_loaded(self, torrent_id, piece_idx):
 		handle = self.core.torrentmanager[piece_id.torrent_id].handle
-		if !handle.have_piece(piece_id.piece_idx):
+		if not handle.have_piece(piece_id.piece_idx):
 			return False
 		session = self.core.session
 		hsh = bytes(handle.info_hash().to_string())
 		cached = session.get_cache_info(hsh)
 		for item in cached:
-			if item.piece == piece_id.piece_idx && item.kind == 1:
+			if item.piece == piece_id.piece_idx and item.kind == 1:
 				handle.flush_cache()
 				return False
 		return True

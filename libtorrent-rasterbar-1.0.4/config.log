@@ -558,11 +558,11 @@ conftest.c:29:22: warning: null argument where non-null required (argument 1) [-
                       pthread_create(0,0,0,0); pthread_cleanup_pop(0);
                       ^
 conftest.c:29:22: warning: null argument where non-null required (argument 3) [-Wnonnull]
-/tmp/cc5R42Ck.o: In function `main':
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:27: undefined reference to `pthread_join'
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:28: undefined reference to `__pthread_register_cancel'
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `pthread_create'
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `__pthread_unregister_cancel'
+/tmp/ccbqwMBr.o: In function `main':
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:27: undefined reference to `pthread_join'
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:28: undefined reference to `__pthread_register_cancel'
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `pthread_create'
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `__pthread_unregister_cancel'
 collect2: error: ld returned 1 exit status
 configure:16461: $? = 1
 configure: failed program was:
@@ -732,11 +732,11 @@ conftest.c:29:22: warning: null argument where non-null required (argument 1) [-
                       pthread_create(0,0,0,0); pthread_cleanup_pop(0);
                       ^
 conftest.c:29:22: warning: null argument where non-null required (argument 3) [-Wnonnull]
-/tmp/cclBKqfC.o: In function `main':
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:27: undefined reference to `pthread_join'
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:28: undefined reference to `__pthread_register_cancel'
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `pthread_create'
-/home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `__pthread_unregister_cancel'
+/tmp/ccxFr0ky.o: In function `main':
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:27: undefined reference to `pthread_join'
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:28: undefined reference to `__pthread_register_cancel'
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `pthread_create'
+/home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/conftest.c:29: undefined reference to `__pthread_unregister_cancel'
 collect2: error: ld returned 1 exit status
 configure:16461: $? = 1
 configure: failed program was:
@@ -1139,7 +1139,7 @@ lt_cv_truncate_bin='/bin/dd bs=4096 count=1'
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/build-aux/missing aclocal-1.14'
+ACLOCAL='${SHELL} /home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/build-aux/missing aclocal-1.14'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
@@ -1149,9 +1149,9 @@ AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
 AM_DEFAULT_VERBOSITY='0'
 AM_V='$(V)'
 AR='ar'
-AUTOCONF='${SHELL} /home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/build-aux/missing autoconf'
-AUTOHEADER='${SHELL} /home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/build-aux/missing autoheader'
-AUTOMAKE='${SHELL} /home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/build-aux/missing automake-1.14'
+AUTOCONF='${SHELL} /home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/build-aux/missing autoconf'
+AUTOHEADER='${SHELL} /home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/build-aux/missing autoheader'
+AUTOMAKE='${SHELL} /home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/build-aux/missing automake-1.14'
 AWK='gawk'
 BOOST_CPPFLAGS='-I/usr/include'
 BOOST_LDFLAGS='-L/usr/lib/x86_64-linux-gnu'
@@ -1207,7 +1207,7 @@ LIPO=''
 LN_S='ln -s'
 LTLIBICONV='-liconv'
 LTLIBOBJS=''
-MAKEINFO='${SHELL} /home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/build-aux/missing makeinfo'
+MAKEINFO='${SHELL} /home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/build-aux/missing makeinfo'
 MANIFEST_TOOL=':'
 MKDIR_P='/bin/mkdir -p'
 NM='/usr/bin/nm -B'
@@ -1288,7 +1288,7 @@ host_vendor='unknown'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh='${SHELL} /home/muali/cppProjects/libtorrent/libtorrent-rasterbar-1.0.4/build-aux/install-sh'
+install_sh='${SHELL} /home/muali/cppProjects/real_time_torrent/libtorrent-rasterbar-1.0.4/build-aux/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'
