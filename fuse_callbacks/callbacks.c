@@ -1,5 +1,4 @@
 #define FUSE_USE_VERSION 26
-#define DEBUG
 
 #include <fuse.h>
 #include <stdio.h>
@@ -16,7 +15,6 @@
 
 
 #define MAX_PATH_LEN 1024
-static const int MAX_WAIT_TIME = 1; // seconds
 
 static char PATH_BUFFER[MAX_PATH_LEN];
 static int TORRENTS_DIR_LEN;
@@ -243,7 +241,6 @@ int main(int argc, char *argv[])
 		perror("Creating responce queue failed");
 		return -3;
 	}
-	// TODO set message queues max msg size
 
 	fuse_ret = fuse_main(argc, argv, &callbacks_oper, NULL);
 
