@@ -45,6 +45,7 @@ from deluge.core.rpcserver import export
 from twisted.internet.task import LoopingCall
 from torrents_storage import TorrentsStorage
 from sysv_ipc import MessageQueue
+from threading import Thread
 
 DEFAULT_PREFS = {
     "test":"NiNiNi"
@@ -59,8 +60,13 @@ class Core(CorePluginBase):
         self.responces_queue = MessageQueue(98531)
         self.torrents_storage = TorrentsStorage(core)
         self.config = deluge.configmanager.ConfigManager("rt.conf", DEFAULT_PREFS)
-        self.request_processing_loop = LoopingCall(self.process_vfs_request)
-#        self.request_processing_loop.start(0.1)
+        self.disabled = False
+        self.thread = Thread(target=self.main)
+        self.thread.start()        
+
+    def main(self):
+        while not self.disabled:
+            self.process_vfs_request()
 
     def parse_request_str(self, request_str):
         space_idx = request_str.find(' ')
@@ -79,7 +85,7 @@ class Core(CorePluginBase):
         self.responces_queue.send(self.to_resp_str(result), type=request_id)
 
     def disable(self):
-        self.request_processing_loop.stop()
+        self.disabled = True
 
     def update(self):
         pass
