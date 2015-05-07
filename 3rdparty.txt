@@ -1,3 +1,6 @@
 Callbacks VFS:
 1) fuse 2.9.3
 2) sysv_ipc version 0.6.8
+Deluge plugin:
+1) libtorrent 1.0.4
+2) deluge 1.0.3
