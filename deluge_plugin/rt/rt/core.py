@@ -62,7 +62,7 @@ class Core(CorePluginBase):
         self.config = deluge.configmanager.ConfigManager("rt.conf", DEFAULT_PREFS)
         self.disabled = False
         self.thread = Thread(target=self.main)
-        self.thread.start()        
+        self.thread.start()
 
     def main(self):
         while not self.disabled:
@@ -76,7 +76,7 @@ class Core(CorePluginBase):
         request_str, request_id = self.requests_queue.receive()
         offset, path = self.parse_request_str(request_str)
 
-        self.torrents_storage.on_request(offset, path, 10, request_id, self.request_callback)
+        self.torrents_storage.on_request(offset, path, 100, request_id, self.request_callback)
 
     def to_resp_str(self, allowed):
         return str(allowed) + '\0'

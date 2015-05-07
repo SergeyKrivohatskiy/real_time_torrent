@@ -58,9 +58,9 @@ class TorrentsStorage():
 		handle = self.core.torrentmanager[torrent_id].handle
 		handle.piece_priority(piece_idx, 7)
 		for i in range(piece_idx + 1, piece_idx + prioritize_piece_count + 1):
-			if handle.piece_priority(piece_idx) == 7:
+			if handle.piece_priority(i) == 7:
 				continue
-			handle.piece_priority(piece_idx, 6)
+			handle.piece_priority(i, 6)
 
 	def is_loaded(self, torrent_id, piece_idx):
 		handle = self.core.torrentmanager[torrent_id].handle
@@ -77,27 +77,23 @@ class TorrentsStorage():
 
 	def on_request(self, offset, path, timeout, req_id, on_response):
 		path = path.decode('utf_8')
-		timeout = 1000
-		#print "Request"
-		#print path
-		#print offset
 		torrent_id, piece_idx, len_to_end = self.get_torrent_piece_info(path, offset)
 		if torrent_id == -1:
 			on_response(req_id, 12345678)
-			print "wrong file"
 			return
 		self.prioritize_piece(torrent_id, piece_idx)
 		if self.is_loaded(torrent_id, piece_idx):
-			print len_to_end
 			on_response(req_id, len_to_end)
-			print "loaded fast"
+			print "loaded fast" + str(len_to_end)
 			return
 		from time import sleep
 		while timeout > 0:
-			sleep(0.1)
-			timeout -= 0.1
+			sleep(1)
+			timeout -= 1
+			print "Wait for loading. " + str(timeout)
 			if self.is_loaded(torrent_id, piece_idx):
 				on_response(req_id, len_to_end)
 				print "loaded slow" + str(timeout)
 				return
+		print "failed"
 		on_response(req_id, -1)
